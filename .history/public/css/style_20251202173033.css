@@ -1,0 +1,63 @@
+
+
+/* Header styling moved to Tailwind utilities in index.html. */
+
+/* Keep any existing custom focus styles if desired */
+.nav-links a:focus, .btn:focus { outline: 3px solid rgba(14,165,164,0.18); outline-offset: 2px; }
+
+/* Cedar color palette variables (requested) */
+:root {
+	--cedar: #4169E1;
+	--cedar-light: #88A6FF;
+	--cedar-dark: #2748A0;
+	--text-main: #2748A0;
+	--background-main: #f9fafb;
+    --white: #ffffff;
+}
+
+/* Apply palette to core elements */
+body { background-color: var(--background-main); color: var(--white); }
+
+
+/* Logo color follows cedar */
+.logo-link { color: var(--cedar); }
+@media (prefers-color-scheme: dark) {
+    .logo-link { color: #ffffff; }
+}
+
+/* Brand utility classes (use these in HTML to apply the cedar palette) */
+.brand-link { color: var(--text-main); transition: color .15s ease; }
+.brand-link:hover, .brand-link:focus { color: var(--cedar-light); }
+
+.brand-cta { background: var(--cedar); color: #ffffff; border: 1px solid var(--cedar-dark); }
+.brand-cta:hover, .brand-cta:focus { background: var(--cedar-dark); }
+
+.brand-outline { color: var(--text-main); background: transparent; border: 1px solid rgba(15,23,42,0.08); }
+.brand-outline:hover, .brand-outline:focus { background: rgba(47,168,106,0.06); }
+
+.brand-heading { color: var(--text-main); }
+
+.brand-link-mobile { color: var(--text-main); }
+.brand-link-mobile:hover { background: rgba(47,168,106,0.06); }
+
+/* Make form elements and other interactive bits follow brand when reasonable */
+button, input[type="submit"], .btn { font-family: inherit; }
+
+/* Hero-specific styles */
+.hero { position: relative; }
+.hero-bg svg { display: block; width: 100%; height: 100%; object-fit: cover; }
+.brand-heading { color: var(--text-main); }
+
+/* Ensure text placed over colored backgrounds (like the hero) is readable */
+.hero, .hero h1, .hero h2, .hero p, .hero a, .hero .brand-heading { color: var(--white); }
+.hero p { color: rgba(255,255,255,0.92); }
+
+/* Buttons/links when shown on the colored hero background */
+.hero .brand-outline { color: var(--white); border-color: rgba(255,255,255,0.22); }
+.hero .brand-outline:hover, .hero .brand-outline:focus { background: rgba(255,255,255,0.06); }
+.hero .brand-cta { background: var(--white); color: var(--cedar-dark); border-color: rgba(255,255,255,0.08); }
+.hero .brand-cta:hover, .hero .brand-cta:focus { background: #ffffff; filter: brightness(.98); }
+
+
+
+
