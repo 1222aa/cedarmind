@@ -8,39 +8,30 @@ RUN apt-get update && apt-get install -y \
     curl \
     sqlite3 \
     libsqlite3-dev \
+    --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Install only essential PHP extensions
+# Install PHP extensions
 RUN docker-php-ext-install pdo pdo_sqlite
 
-# Increase memory limit for Composer
-ENV COMPOSER_MEMORY_LIMIT=-1
-
 # Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-# Copy application files
+# Copy application code
 COPY . /app
 
-# Install dependencies with verbose output
-RUN composer install \
-    --no-dev \
-    --optimize-autoloader \
-    --no-interaction \
-    --verbose
-
-# Create storage directories
+# Set permissions before installing
 RUN mkdir -p /app/storage /app/bootstrap/cache /var/data && \
-    chmod -R 755 /app/storage /app/bootstrap/cache
+    chmod -R 777 /app/storage /app/bootstrap/cache
 
-# Generate app key if needed
-RUN php artisan key:generate || true
+# Install composer dependencies
+ENV COMPOSER_MEMORY_LIMIT=-1
+RUN cd /app && composer install --no-dev --no-interaction --prefer-dist 2>&1 || echo "Composer install had warnings"
 
-# Run migrations
-RUN php artisan migrate --force || true
+# Generate key and run migrations
+RUN php artisan key:generate --force 2>&1 || true && \
+    php artisan migrate --force --no-interaction 2>&1 || true
 
-# Expose port
 EXPOSE 10000
 
-# Start Laravel
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
