@@ -8,10 +8,20 @@ RUN apt-get update && apt-get install -y \
     curl \
     libpq-dev \
     libsqlite3-dev \
+    zlib1g-dev \
+    libzip-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo pdo_sqlite
+RUN docker-php-ext-install \
+    pdo \
+    pdo_sqlite \
+    zip \
+    mbstring \
+    xml
+
+# Increase memory limit for Composer
+ENV COMPOSER_MEMORY_LIMIT=-1
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -19,19 +29,18 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy application files
 COPY . /app
 
-# Install dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Install dependencies with verbose output
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction \
+    --verbose
 
 # Create storage directories
-RUN mkdir -p /app/storage /app/bootstrap/cache /var/data
+RUN mkdir -p /app/storage /app/bootstrap/cache /var/data && \
+    chmod -R 755 /app/storage /app/bootstrap/cache
 
-# Set permissions
-RUN chmod -R 755 /app/storage /app/bootstrap/cache
-
-# Copy .env
-COPY .env.example .env
-
-# Generate app key if not exists
+# Generate app key if needed
 RUN php artisan key:generate || true
 
 # Run migrations
