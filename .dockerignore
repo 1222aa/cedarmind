@@ -1,0 +1,14 @@
+.git
+.gitignore
+.dockerignore
+.env.backup
+.env.production
+node_modules
+npm-debug.log
+vendor
+.history
+.vscode
+.idea
+*.log
+.DS_Store
+Thumbs.db

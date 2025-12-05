@@ -1,9 +1,8 @@
 services:
   - type: web
     name: cedarmind
-    runtime: php
+    runtime: docker
     plan: free
-    buildCommand: "composer install && php artisan migrate --force && php artisan config:cache && php artisan route:cache"
     startCommand: "php artisan serve --host=0.0.0.0 --port=10000"
     envVars:
       - key: APP_ENV
@@ -17,4 +16,6 @@ services:
       - key: DB_CONNECTION
         value: sqlite
       - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_DRIVER
         value: database
