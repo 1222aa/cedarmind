@@ -19,7 +19,7 @@
 /public/storage
 /storage/*.key
 /storage/pail
-# /vendor (temporarily disabled for deployment)
+/vendor
 Homestead.json
 Homestead.yaml
 Thumbs.db

@@ -14,14 +14,21 @@ RUN apt-get update && apt-get install -y \
 # Install PHP extensions
 RUN docker-php-ext-install pdo pdo_sqlite
 
-# Copy entire app including vendor
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Copy composer files only first
+COPY composer.json composer.lock /app/
+
+# Install dependencies  
+ENV COMPOSER_MEMORY_LIMIT=-1
+RUN cd /app && composer install --no-dev --no-interaction --prefer-dist --no-scripts
+
+# Copy entire application
 COPY . /app
 
-# Just in case vendor is missing, try to install
-RUN if [ ! -d "/app/vendor" ]; then \
-        curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
-        cd /app && composer install --no-dev --no-interaction --prefer-dist 2>&1 || echo "Composer install skipped"; \
-    fi
+# Run post-install scripts
+RUN composer dump-autoload --no-dev --optimize
 
 # Setup storage
 RUN mkdir -p storage/framework/{cache,sessions} storage/logs storage/app && \
