@@ -17,15 +17,12 @@ RUN docker-php-ext-install pdo pdo_sqlite
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copy composer files only first
-COPY composer.json composer.lock /app/
+# Copy entire application first
+COPY . /app
 
 # Install dependencies  
 ENV COMPOSER_MEMORY_LIMIT=-1
-RUN cd /app && composer install --no-dev --no-interaction --prefer-dist --no-scripts
-
-# Copy entire application
-COPY . /app
+RUN composer install --no-dev --no-interaction --prefer-dist --no-scripts 2>&1 || composer install --no-dev --no-interaction --prefer-dist
 
 # Run post-install scripts
 RUN composer dump-autoload --no-dev --optimize
@@ -37,6 +34,7 @@ RUN mkdir -p storage/framework/{cache,sessions} storage/logs storage/app && \
 EXPOSE 8000
 
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+
 
 
 
