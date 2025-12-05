@@ -8,32 +8,20 @@ RUN apt-get update && apt-get install -y \
     libsqlite3-dev \
     git \
     curl \
-    unzip \
     --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
 RUN docker-php-ext-install pdo pdo_sqlite
 
-# Install composer
-COPY --from=composer:2.5 /usr/bin/composer /usr/local/bin/composer
-
-# Copy application
+# Copy entire app including vendor
 COPY . /app
 
-# Delete lock file to force fresh install
-RUN rm -f composer.lock
-
-# Configure composer
-RUN composer config --no-plugins allow-plugins.barryvdh/laravel-dompdf true && \
-    composer config --no-plugins allow-plugins.laravel/sail true
-
-# Install dependencies
-ENV COMPOSER_MEMORY_LIMIT=-1
-RUN composer update --no-dev --no-interaction --prefer-dist 2>&1 | tail -20 || true
-
-# Ensure vendor exists
-RUN if [ ! -d "vendor" ]; then echo "Vendor missing, trying install..."; composer install --no-dev --no-interaction --prefer-dist 2>&1 | tail -20 || true; fi
+# Just in case vendor is missing, try to install
+RUN if [ ! -d "/app/vendor" ]; then \
+        curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+        cd /app && composer install --no-dev --no-interaction --prefer-dist 2>&1 || echo "Composer install skipped"; \
+    fi
 
 # Setup storage
 RUN mkdir -p storage/framework/{cache,sessions} storage/logs storage/app && \
@@ -42,6 +30,7 @@ RUN mkdir -p storage/framework/{cache,sessions} storage/logs storage/app && \
 EXPOSE 8000
 
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+
 
 
 
