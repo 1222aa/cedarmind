@@ -6,19 +6,12 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     git \
     curl \
-    libpq-dev \
+    sqlite3 \
     libsqlite3-dev \
-    zlib1g-dev \
-    libzip-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
-RUN docker-php-ext-install \
-    pdo \
-    pdo_sqlite \
-    zip \
-    mbstring \
-    xml
+# Install only essential PHP extensions
+RUN docker-php-ext-install pdo pdo_sqlite
 
 # Increase memory limit for Composer
 ENV COMPOSER_MEMORY_LIMIT=-1
