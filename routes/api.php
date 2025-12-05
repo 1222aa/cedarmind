@@ -12,7 +12,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // Public contact endpoint (accepts JSON)
 Route::post('/contact', [ContactController::class, 'store']);
-// Protected routes
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);

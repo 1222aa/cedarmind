@@ -6,6 +6,7 @@
 .phpactor.json
 .phpunit.result.cache
 /.fleet
+/.history
 /.idea
 /.nova
 /.phpunit.cache
@@ -22,3 +23,10 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+check_certificates.php
+check_courses.php
+check_users.php
+create_all_certificates.php
+create_all_user_certificates.php
+create_test_certificate.php
+create_user_certificates.php
